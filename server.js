@@ -20,11 +20,15 @@ res.send(
   </head>
   <body>
     <div class="news-list">
-      <header><img src="/logo.png"/>Sandwiches</header>
+      <header><img src="/logo.png"/>Sandwiches & Ingredients</header>
       ${posts.map(post => `
         <div class='news-item'>
           <p>
+          <ul>
+          <li>
            <a href='/${post.id}'> <span class="news-position">${post.title} </span></a>
+           </li>
+           </ul>
           </p>
         </div>`
       ).join('')}
@@ -43,20 +47,24 @@ app.get('/:id', (req, res)=> {
       <head>
         <title>Ingredients</title>
         <link rel="stylesheet" href="/style.css" />
-        <nav>
-  <a href='/'>Sandwiches</a>
+        <nav class='nav-link'>
+  <a href='/'> Back</a>
   </nav>
       </head>
       <body>
         <div class="news-list">
           <header><img src="/logo.png"/>${post.title}</header>
-             
+    
          
+
+
           <p>
-              ${ post.content }
-              <img src="/${post.pic}.png" class="sand">
+              <a class="upper">${ post.content }</a>
+              <div class= "sand">
+              <img src="/${post.pic}.png">
+              </div>
               <ul> 
-              Ingredients: ${ post.Ingredients } 
+              <a class="lower">${ post.Ingredients } </a>
               </ul>
               </p>
             </div>
@@ -71,3 +79,5 @@ const PORT = 1234;
 app.listen(PORT, () => {
   console.log(`App listening in port ${1234}`);
 });
+
+
