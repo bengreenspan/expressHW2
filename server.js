@@ -1,9 +1,10 @@
-
-const { client, syncAndSeed } = require('./db');
+const html = require('html-template-tag');
+const path = require('path');
 const express = require("express");
 const morgan = require('morgan');
 const app = express();
-const path = require('path');
+
+const { client, syncAndSeed } = require('./db');
 
 
 const setUp = async () => {
@@ -38,13 +39,14 @@ app.get('/', async(req, res, next) => {
       </head>
       <body>
         <div class="news-list">
+        <p>
           <header><img src="/logo.png"/>Sandwiches</header>
           ${sandwiches.map(sandwiches => `
             <div class='news-item'>
-              <p>
+            
               <ul>
               <li>
-               <a href='/sandwiches/${sandwiches.name}'> <span class="news-position">${sandwiches.name} </span></a>
+              <a href='/sandwiches/${sandwiches.id}'><span class="news-position">${sandwiches.name} </span></a>
                </li>
                </ul>
               </p>
@@ -67,6 +69,7 @@ app.get('/sandwiches/:id', async(req, res, next) => {
     const sandwiches = response.rows[0];
     response = await client.query('SELECT * From ingred where sandwich_id=$1;', [req.params.id]);
     const ingreds = response.rows;
+
     res.send(
       `<!DOCTYPE html>
       <html>
@@ -78,16 +81,58 @@ app.get('/sandwiches/:id', async(req, res, next) => {
         <div class="news-list">
           <header><img src="/logo.png"/><a href='/'>Sandwiches</a></header>
           <h2>${ sandwiches.name } </h2>
-        </div>
          <ul>
          ${
           ingreds.map( ingred => `
           <li>
+          <a href='/ingredients/${ingred.id}'>
           ${ ingred.name }
+          </a>
           </li>
           `).join('')
         }
+        </div>
+         </ul>
+      </body>
+    </html>
 
+    `);
+  }
+  catch(ex){
+    next(ex);
+  }
+});
+
+
+app.get('/ingredients/:id', async(req, res, next) => {
+  try {
+    let response = await client.query('SELECT * From ingred where name=$1;', [req.params.name]);
+    const sandwiches = response.rows[0];
+    response = await client.query('SELECT * From ingred where sandwich_id=$1;', [req.params.id]);
+    const ingreds = response.rows;
+
+    res.send(
+      `<!DOCTYPE html>
+      <html>
+      <head>
+        <title>Sandwiches</title>
+        <link rel="stylesheet" href="/style.css" />
+      </head>
+      <body>
+        <div class="news-list">
+          <header><img src="/logo.png"/><a href='/'>Sandwiches</a></header>
+          <h2>${ ingreds.name } </h2>
+         <ul>
+         ${
+          ingreds.map( ingred => `
+          <li>
+          <a href='/ingredients/${ingred.id}'>
+          ${ ingred.name }
+          </a>
+          </li>
+          `).join('')
+        }
+        </div>
          </ul>
       </body>
     </html>
@@ -132,6 +177,10 @@ app.get( '*', async(req, res, next) => {
 
 const PORT = process.env.PORT || 1234
 
+module.exports = app
+
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.urlencoded({extended:false}));
 
 
 

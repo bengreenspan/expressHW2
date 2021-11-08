@@ -1,7 +1,8 @@
 const pg = require('pg');
-// const postBank = require('./postBank');
 
 const client = new pg.Client('postgres://localhost/sandwichdb2');
+
+
 
 const syncAndSeed = async() => {
 const SQL = `
@@ -52,7 +53,4 @@ module.exports = {
     client,
     syncAndSeed
 };
-
-
-
 
